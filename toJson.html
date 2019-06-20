@@ -1,0 +1,81 @@
+<!--
+  Copyright JS Foundation and other contributors, http://js.foundation
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="od-converter-nodered">
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Knotenname</label>
+    <input type="text" id="node-input-name" placeholder="Name für Knoten">
+  </div>
+  <div class="form-row">
+    <label for="node-input-sensorid"><i class="fa fa-tag"></i> Eindeutiger Bezeichner (ID)</label>
+    <input type="text" id="node-input-sensorid" placeholder="Schlüsselwert unter dem Daten gespeichert werden">
+  </div>
+  <div class="form-row">
+    <label for="node-input-sensorname"><i class="fa fa-tag"></i> Sensorname</label>
+    <input type="text" id="node-input-sensorname" placeholder="Name für den Sensorwert, bspw. Temperatur">
+  </div>
+  <div class="form-row">
+    <label for="node-input-unit"><i class="fa fa-tag"></i> Einheit</label>
+    <input type="text" id="node-input-unit" placeholder="Einheit des Wertes, bspw. °C">
+  </div>
+  <div class="form-row">
+    <label for="node-input-owner"><i class="fa fa-tag"></i> Nutzer / Datenquelle</label>
+    <input type="text" id="node-input-owner" placeholder="Datenquelle / Nutzername">
+  </div>
+  <div class="form-row">
+      <label for="node-input-datatype"><i class="icon-tag"></i> Datentyp</label>
+      <select id="node-input-datatype">
+        <option value="String">Text</option>
+        <option value="Boolean">Wahr/Falsch (Bool)</option>
+        <option value="Number">Zahlenwert</option>
+        <option value="Object">Beliebiges Objekt (JSON)</option>
+        <option value="Geo">Geodatum (GeoJSON)</option>
+      </select>
+    </div>
+</script>
+<style></style>
+<script type="text/x-red" data-help-name="od-converter-nodered">
+  <p>Ein Knoten, um die  Ausgabe von Sensoren in das JSON-Datenformat des open.DASH Dashboardes zu konvertieren.</p>
+</script>
+
+<script type="text/javascript">
+  RED.nodes.registerType("od-converter-nodered", {
+    category: "input",
+    color: "#d8bfd8",
+    defaults: {
+      sensorid: {},
+      name: {},
+      owner: {},
+      datatype: {},
+      unit: {},
+      sensorname: {}
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: "inject.png",
+    oneditprepare: function() {
+      console.log("Current name is:", this.name);
+    },
+    label: function() {
+      return this.name || "open.DASH JSON-Converter";
+    },
+    paletteLabel: "open.DASH JSON",
+    labelStyle: function() {
+      return this.name ? "node_label_italic" : "";
+    },
+    settings: {}
+  });
+</script>

@@ -1,0 +1,16 @@
+{
+  "name": "od-nodered-node",
+  "version": "1.0.0",
+  "description": "Node Red node to format data into open.DASH timeseries data",
+  "main": "toJson.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Martin Stein",
+  "license": "MIT",
+  "node-red": {
+    "nodes": {
+      "od-converter-nodered": "toJson.js"
+    }
+  }
+}
