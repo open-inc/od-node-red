@@ -40,10 +40,10 @@ module.exports = function(RED) {
       toSend.name = node.config.name;
       let value = {
         date: ts,
-        value: [msg.payload]
+        value: value2send
       };
 
-      toSend.values = value2send;
+      toSend.values = [value];
 
       newmsg = { payload: toSend };
       node.send(newmsg);
