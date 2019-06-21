@@ -12,23 +12,14 @@
     <input type="text" id="node-input-sensorname" placeholder="Name für den Sensorwert, bspw. Temperatur">
   </div>
   <div class="form-row">
-    <label for="node-input-unit"><i class="fa fa-tag"></i> Einheit</label>
-    <input type="text" id="node-input-unit" placeholder="Einheit des Wertes, bspw. °C">
-  </div>
-  <div class="form-row">
     <label for="node-input-owner"><i class="fa fa-tag"></i> Nutzer / Datenquelle</label>
     <input type="text" id="node-input-owner" placeholder="Datenquelle / Nutzername">
   </div>
   <div class="form-row">
-      <label for="node-input-datatype"><i class="icon-tag"></i> Datentyp</label>
-      <select id="node-input-datatype">
-        <option value="String">Text</option>
-        <option value="Boolean">Wahr/Falsch (Bool)</option>
-        <option value="Number">Zahlenwert</option>
-        <option value="Object">Beliebiges Objekt (JSON)</option>
-        <option value="Geo">Geodatum (GeoJSON)</option>
-      </select>
-    </div>
+    <label for="node-input-dimCount"><i class="fa fa-tag"></i> Anzahl der Werte des Sensors</label>
+    <input type="number" id="node-input-dimCount" placeholder="Dimensionzahl des Sensors, bspw. 2 für GPS (Lat,Lon)">
+  </div>
+  <div id="valueTypes"><div>
 </script>
 <style></style>
 <script type="text/x-red" data-help-name="od-converter-nodered">
@@ -41,17 +32,92 @@
     color: "#d8bfd8",
     defaults: {
       sensorid: {},
+      dimCount: { value: 1 },
       name: {},
       owner: {},
-      datatype: {},
-      unit: {},
+      valueTypes: {},
       sensorname: {}
     },
     inputs: 1,
     outputs: 1,
     icon: "inject.png",
+    oneditsave: function() {
+      console.log("Saving valuetypes...");
+      this.valueTypes = [];
+      let x = this;
+      x.dimCount = x.tempDimCount;
+      for (let i = 0; i < x.dimCount; i++) {
+        let valueType = {
+          name: $("#node-input-valuename" + (i + 1)).val(),
+          unit: $("#node-input-valueunit" + (i + 1)).val(),
+          type: $("#node-input-datatype" + (i + 1)).val()
+        };
+        this.valueTypes.push(valueType);
+      }
+      console.log("...", this.valueTypes);
+    },
     oneditprepare: function() {
+      let x = this;
       console.log("Current name is:", this.name);
+      let inputTemplate =
+        "<strong>Wertdimension {{number}}</strong>" +
+        '<div class="form-row">' +
+        '<label for="node-input-valuename{{number}}"><i class="fa fa-tag"></i> Name für  {{number}}. Wert</label>' +
+        '<input type="text" id="node-input-valuename{{number}}" placeholder="Name für die {{number}}. Dimension des Sensor, bspw. X-Achse">' +
+        "</div>" +
+        '<div class="form-row">' +
+        '<label for="node-input-valueunit{{number}}"><i class="fa fa-tag"></i> Einheit für {{number}}. Wert</label>' +
+        '<input type="text" id="node-input-valueunit{{number}}" placeholder="Einheit des {{number}}. Wertes , bspw. X-Achse m/s²">' +
+        "</div>" +
+        '<div class="form-row">' +
+        '<label for="node-input-datatype{{number}}"><i class="icon-tag"></i> Datentyp</label>' +
+        '<select id="node-input-datatype{{number}}">' +
+        '<option value="String">Text</option>' +
+        '<option value="Boolean">Wahr/Falsch (Bool)</option>' +
+        '<option value="Number">Zahlenwert</option>' +
+        '<option value="Object">Beliebiges Objekt (JSON)</option>' +
+        '<option value="Geo">Geodatum (GeoJSON)</option>' +
+        "</select>" +
+        "</div>";
+
+      let preparedString = "";
+      for (let i = 0; i < x.dimCount; i++) {
+        preparedString += inputTemplate.replace(
+          new RegExp("{{number}}", "g"),
+          i + 1
+        );
+      }
+
+      console.log("before:", $("#valueTypes").html());
+      $("#valueTypes").html(preparedString);
+      console.log("after:", $("#valueTypes").html());
+
+      $("#node-input-dimCount").change(function() {
+        x.tempDimCount = Math.max(parseInt($("#node-input-dimCount").val()), 1);
+        let preparedString = "";
+        for (let i = 0; i < x.tempDimCount; i++) {
+          preparedString += inputTemplate.replace(
+            new RegExp("{{number}}", "g"),
+            i + 1
+          );
+        }
+        $("#valueTypes").html(preparedString);
+        for (let i = 0; i < x.dimCount; i++) {
+          if (x.valueTypes[i]) {
+            $("#node-input-valuename" + (i + 1)).val(x.valueTypes[i].name);
+            $("#node-input-valueunit" + (i + 1)).val(x.valueTypes[i].unit);
+            $("#node-input-datatype" + (i + 1)).val(x.valueTypes[i].type);
+          }
+        }
+      });
+
+      for (let i = 0; i < x.dimCount; i++) {
+        if (x.valueTypes[i]) {
+          $("#node-input-valuename" + (i + 1)).val(x.valueTypes[i].name);
+          $("#node-input-valueunit" + (i + 1)).val(x.valueTypes[i].unit);
+          $("#node-input-datatype" + (i + 1)).val(x.valueTypes[i].type);
+        }
+      }
     },
     label: function() {
       return this.name || "open.DASH JSON-Converter";

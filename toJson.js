@@ -4,14 +4,24 @@ module.exports = function(RED) {
     console.log("OD-NODE:", config);
     this.config = config;
     let node = this;
-
     node.on("input", function(msg) {
-      console.log(node);
-      let valueType = {
-        unit: node.config.unit,
-        name: "Wert",
-        type: node.config.datatype
-      };
+      let config = node.config;
+      let ts = msg.date || new Date().getTime();
+      let value2send = msg.payload;
+      if (!Array.isArray(value2send)) {
+        value2send = [value2send];
+      }
+
+      if (value2send.length !== config.valueTypes.length) {
+        node.error(
+          "Es wurde eine falsche Anzahl von Werten übergeben. Erhalten: " +
+            value2send.length +
+            " Erwartet: " +
+            config.valueTypes.length,
+          msg
+        );
+        return;
+      }
 
       let json =
         "{" +
@@ -24,16 +34,16 @@ module.exports = function(RED) {
         '"values" : []' +
         "}";
       let toSend = JSON.parse(json);
-      toSend.valueTypes = [valueType];
+      toSend.valueTypes = config.valueTypes;
       toSend.id = node.config.sensorid;
       toSend.user = node.config.owner;
       toSend.name = node.config.name;
       let value = {
-        date: new Date().getTime(),
+        date: ts,
         value: [msg.payload]
       };
 
-      toSend.values = [value];
+      toSend.values = value2send;
 
       newmsg = { payload: toSend };
       node.send(newmsg);
