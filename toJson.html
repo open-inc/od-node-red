@@ -103,10 +103,12 @@
         }
         $("#valueTypes").html(preparedString);
         for (let i = 0; i < x.dimCount; i++) {
-          if (x.valueTypes[i]) {
-            $("#node-input-valuename" + (i + 1)).val(x.valueTypes[i].name);
-            $("#node-input-valueunit" + (i + 1)).val(x.valueTypes[i].unit);
-            $("#node-input-datatype" + (i + 1)).val(x.valueTypes[i].type);
+          if ("valueTypes" in x) {
+            if (x.valueTypes[i]) {
+              $("#node-input-valuename" + (i + 1)).val(x.valueTypes[i].name);
+              $("#node-input-valueunit" + (i + 1)).val(x.valueTypes[i].unit);
+              $("#node-input-datatype" + (i + 1)).val(x.valueTypes[i].type);
+            }
           }
         }
       });
