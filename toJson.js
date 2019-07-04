@@ -37,7 +37,7 @@ module.exports = function(RED) {
       toSend.valueTypes = config.valueTypes;
       toSend.id = node.config.sensorid;
       toSend.user = node.config.owner;
-      toSend.name = node.config.name;
+      toSend.name = node.config.sensorname;
       let value = {
         date: ts,
         value: value2send
