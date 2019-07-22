@@ -1,6 +1,42 @@
+<script type="text/x-red" data-help-name="od-converter-nodered">
+  <p>Converts data to open.DASH JSON Format</p>
+
+  <h3>Inputs</h3>
+      <dl class="message-properties">
+          <dt>payload
+              <span class="property-type">Value | Array</span>
+          </dt>
+          <dd> The value / values that should be transmitted </dd>
+          <dt class="optional">date <span class="property-type">timestamp (ms)</span></dt>
+          <dd> Timestamp in milliseconds, which should be used (defaults to current Timestamp)</dd>
+          <dt class="optional">sensorid <span class="property-type">string</span></dt>
+          <dd> Sensor ID to be used (defaults to configured sensorid) </dd>
+          <dt class="optional">owner <span class="property-type">string</span></dt>
+          <dd> Key for the data source to be used (defaults to configured owner)</dd>
+      </dl>
+
+   <h3>Outputs</h3>
+       <ol class="node-ports">
+           <li>Standard output
+               <dl class="message-properties">
+                   <dt>payload <span class="property-type">string</span></dt>
+                   <dd>JSON containing the configured data in open.DASH JSON Format</dd>
+               </dl>
+           </li>
+       </ol>
+
+  <h3>Details</h3>
+      <p><code>msg.payload</code> is used as the payload and contains the values.</p>
+      <p>If provided <code>msg.owner</code>, <code>msg.date</code>, <code>msg.sensorid</code>, will be used in the resulting JSON Object.</p>
+
+  <h3>References</h3>
+      <ul>
+          <li><a href="https://docs.opendash.de">open.DASH docs</a></li>
+      </ul>
+</script>
 <script type="text/x-red" data-template-name="od-converter-nodered">
   <div class="form-row">
-    <label for="node-input-name"><i class="fa fa-tag"></i> Knotenname</label>
+    <label for="node-input-name"><i class="fa fa-tag"></i> Node-Name</label>
     <input type="text" id="node-input-name" placeholder="Name für Knoten">
   </div>
   <div class="form-row">
@@ -28,7 +64,7 @@
 
 <script type="text/javascript">
   RED.nodes.registerType("od-converter-nodered", {
-    category: "input",
+    category: "output",
     color: "#d8bfd8",
     defaults: {
       sensorid: {},
@@ -40,9 +76,8 @@
     },
     inputs: 1,
     outputs: 1,
-    icon: "inject.png",
+    icon: "envelope.png",
     oneditsave: function() {
-      console.log("Saving valuetypes...");
       this.valueTypes = [];
       let x = this;
       x.dimCount = x.tempDimCount;
@@ -58,7 +93,6 @@
     },
     oneditprepare: function() {
       let x = this;
-      console.log("Current name is:", this.name);
       let inputTemplate =
         "<strong>Wertdimension {{number}}</strong>" +
         '<div class="form-row">' +
@@ -88,10 +122,7 @@
         );
       }
 
-      console.log("before:", $("#valueTypes").html());
       $("#valueTypes").html(preparedString);
-      console.log("after:", $("#valueTypes").html());
-
       $("#node-input-dimCount").change(function() {
         x.tempDimCount = Math.max(parseInt($("#node-input-dimCount").val()), 1);
         let preparedString = "";

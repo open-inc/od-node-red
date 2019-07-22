@@ -7,12 +7,21 @@ module.exports = function(RED) {
     node.on("input", function(msg) {
       let config = node.config;
       let ts = msg.date || new Date().getTime();
+      let id2Use = msg.sensorid || node.config.sensorid;
+      let owner2use = msg.owner || node.config.owner;
       let value2send = msg.payload;
+      let name2Use = msg.sensorname || node.config.sensorname;
+      let meta2Use = msg.meta || {};
       if (!Array.isArray(value2send)) {
         value2send = [value2send];
       }
 
       if (value2send.length !== config.valueTypes.length) {
+        this.status({
+          fill: "red",
+          shape: "dot",
+          text: "Ungültige Werte " + JSON.stringify(value2send)
+        });
         node.error(
           "Es wurde eine falsche Anzahl von Werten übergeben. Erhalten: " +
             value2send.length +
@@ -22,6 +31,12 @@ module.exports = function(RED) {
         );
         return;
       }
+
+      this.status({
+        fill: "green",
+        shape: "dot",
+        text: "Last Value received: " + JSON.stringify(value2send)
+      });
 
       let json =
         "{" +
@@ -35,9 +50,10 @@ module.exports = function(RED) {
         "}";
       let toSend = JSON.parse(json);
       toSend.valueTypes = config.valueTypes;
-      toSend.id = node.config.sensorid;
-      toSend.user = node.config.owner;
-      toSend.name = node.config.sensorname;
+      toSend.id = id2Use;
+      toSend.user = owner2use;
+      toSend.name = name2Use;
+      toSend.meta = meta2Use;
       let value = {
         date: ts,
         value: value2send
