@@ -12,11 +12,12 @@ module.exports = function(RED) {
       let value2send = msg.payload;
       let name2Use = msg.sensorname || node.config.sensorname;
       let meta2Use = msg.meta || {};
+      let valueTypes = msg.valueTypes || node.config.valueTypes;
       if (!Array.isArray(value2send)) {
         value2send = [value2send];
       }
 
-      if (value2send.length !== config.valueTypes.length) {
+      if (value2send.length !== valueTypes.length) {
         this.status({
           fill: "red",
           shape: "dot",
@@ -49,7 +50,7 @@ module.exports = function(RED) {
         '"values" : []' +
         "}";
       let toSend = JSON.parse(json);
-      toSend.valueTypes = config.valueTypes;
+      toSend.valueTypes = valueTypes;
       toSend.id = id2Use;
       toSend.user = owner2use;
       toSend.name = name2Use;
